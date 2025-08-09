@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Encryption & Decryption</title>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
+    textarea, select, input, button { width: 100%; padding: 8px; margin: 6px 0; }
+    button { background: #007BFF; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Encryption / Decryption Tool</h2>
+    <label>Algorithm:</label>
+    <select id="algorithm" onchange="showKeyInput()">
+        <option value="caesar">Caesar Cipher</option>
+        <option value="multiplicative">Multiplicative Cipher</option>
+        <option value="playfair">Playfair Cipher</option>
+        <option value="hill">Hill Cipher</option>
+        <option value="railfence">Rail Fence Cipher</option>
+        <option value="vigenere">Vigenère Cipher</option>
+    </select>
+
+    <label>Mode:</label>
+    <select id="mode">
+        <option value="encrypt">Encrypt</option>
+        <option value="decrypt">Decrypt</option>
+    </select>
+
+    <div id="keySection">
+        <label>Key / Shift:</label>
+        <input type="text" id="key" placeholder="Enter key or shift">
+    </div>
+
+    <label>Input Text:</label>
+    <textarea id="inputText" placeholder="Enter your text here"></textarea>
+
+    <button onclick="processText()">Run</button>
+
+    <label>Output:</label>
+    <textarea id="outputText" readonly></textarea>
+</div>
+
+<script>
+function mod(n, m) { return ((n % m) + m) % m; }
+
+/* ---------------- Caesar Cipher ---------------- */
+function caesar(text, shift, encrypt=true) {
+    shift = parseInt(shift);
+    if (!encrypt) shift = -shift;
+    return text.split('').map(ch => {
+        if (/[A-Z]/.test(ch)) return String.fromCharCode(mod(ch.charCodeAt(0) - 65 + shift, 26) + 65);
+        if (/[a-z]/.test(ch)) return String.fromCharCode(mod(ch.charCodeAt(0) - 97 + shift, 26) + 97);
+        return ch;
+    }).join('');
+}
+
+/* ---------------- Multiplicative Cipher ---------------- */
+function multiplicative(text, key, encrypt=true) {
+    key = parseInt(key);
+    let invKey = 0;
+    if (!encrypt) {
+        for (let i = 1; i < 26; i++) if ((key * i) % 26 === 1) { invKey = i; break; }
+    }
+    return text.split('').map(ch => {
+        if (/[A-Z]/.test(ch)) {
+            let x = ch.charCodeAt(0) - 65;
+            return String.fromCharCode(((encrypt ? key*x : invKey*x) % 26) + 65);
+        }
+        if (/[a-z]/.test(ch)) {
+            let x = ch.charCodeAt(0) - 97;
+            return String.fromCharCode(((encrypt ? key*x : invKey*x) % 26) + 97);
+        }
+        return ch;
+    }).join('');
+}
+
+/* ---------------- Playfair Cipher ---------------- */
+function playfair(text, key, encrypt=true) {
+    key = key.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, '');
+    let table = "", seen = {};
+    key.split('').forEach(c => { if (!seen[c]) { table += c; seen[c] = true; } });
+    "ABCDEFGHIKLMNOPQRSTUVWXYZ".split('').forEach(c => { if (!seen[c]) { table += c; seen[c] = true; } });
+    let matrix = table.match(/.{1,5}/g);
+
+    text = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, '');
+    let pairs = [];
+    for (let i = 0; i < text.length; i += 2) {
+        let a = text[i], b = text[i+1] || 'X';
+        if (a === b) { b = 'X'; i--; }
+        pairs.push([a, b]);
+    }
+
+    let result = "";
+    for (let [a, b] of pairs) {
+        let ra = Math.floor(table.indexOf(a)/5), ca = table.indexOf(a)%5;
+        let rb = Math.floor(table.indexOf(b)/5), cb = table.indexOf(b)%5;
+        if (ra === rb) { // same row
+            ca = mod(ca + (encrypt?1:-1), 5);
+            cb = mod(cb + (encrypt?1:-1), 5);
+        } else if (ca === cb) { // same column
+            ra = mod(ra + (encrypt?1:-1), 5);
+            rb = mod(rb + (encrypt?1:-1), 5);
+        } else { // rectangle
+            let temp = ca; ca = cb; cb = temp;
+        }
+        result += matrix[ra][ca] + matrix[rb][cb];
+    }
+    return result;
+}
+
+/* ---------------- Hill Cipher ---------------- */
+function hillCipher(text, keyMatrix, encrypt=true) {
+    let size = Math.sqrt(keyMatrix.length);
+    text = text.toUpperCase().replace(/[^A-Z]/g, '');
+    while (text.length % size !== 0) text += 'X';
+    let result = "";
+    if (!encrypt) {
+        let det = (keyMatrix[0]*keyMatrix[3] - keyMatrix[1]*keyMatrix[2]);
+        det = mod(det, 26);
+        let invDet = 0;
+        for (let i = 1; i < 26; i++) if ((det*i)%26===1) { invDet = i; break; }
+        keyMatrix = [
+            mod(keyMatrix[3]*invDet,26),
+            mod(-keyMatrix[1]*invDet,26),
+            mod(-keyMatrix[2]*invDet,26),
+            mod(keyMatrix[0]*invDet,26)
+        ];
+    }
+    for (let i = 0; i < text.length; i += size) {
+        let chunk = text.slice(i, i+size).split('').map(c=>c.charCodeAt(0)-65);
+        for (let r = 0; r < size; r++) {
+            let sum = 0;
+            for (let c = 0; c < size; c++) sum += keyMatrix[r*size+c] * chunk[c];
+            result += String.fromCharCode(mod(sum,26)+65);
+        }
+    }
+    return result;
+}
+
+/* ---------------- Rail Fence Cipher ---------------- */
+function railFence(text, rails, encrypt=true) {
+    rails = parseInt(rails);
+    if (encrypt) {
+        let fence = Array.from({length: rails}, () => []);
+        let rail = 0, dir = 1;
+        for (let ch of text) {
+            fence[rail].push(ch);
+            rail += dir;
+            if (rail === 0 || rail === rails-1) dir *= -1;
+        }
+        return fence.flat().join('');
+    } else {
+        let pattern = [];
+        let rail = 0, dir = 1;
+        for (let i = 0; i < text.length; i++) {
+            pattern.push(rail);
+            rail += dir;
+            if (rail === 0 || rail === rails-1) dir *= -1;
+        }
+        let pos = Array(text.length);
+        let idx = 0;
+        for (let r = 0; r < rails; r++) {
+            for (let i = 0; i < text.length; i++) {
+                if (pattern[i] === r) pos[i] = text[idx++];
+            }
+        }
+        return pos.join('');
+    }
+}
+
+/* ---------------- Vigenère Cipher ---------------- */
+function vigenere(text, key, encrypt=true) {
+    key = key.toUpperCase().replace(/[^A-Z]/g, '');
+    let j = 0;
+    return text.split('').map(ch => {
+        if (/[A-Z]/.test(ch)) {
+            let shift = key.charCodeAt(j % key.length) - 65;
+            j++;
+            return String.fromCharCode(mod(ch.charCodeAt(0) - 65 + (encrypt?shift:-shift), 26) + 65);
+        }
+        if (/[a-z]/.test(ch)) {
+            let shift = key.charCodeAt(j % key.length) - 65;
+            j++;
+            return String.fromCharCode(mod(ch.charCodeAt(0) - 97 + (encrypt?shift:-shift), 26) + 97);
+        }
+        return ch;
+    }).join('');
+}
+
+/* ---------------- Main ---------------- */
+function processText() {
+    let algo = document.getElementById("algorithm").value;
+    let mode = document.getElementById("mode").value === "encrypt";
+    let key = document.getElementById("key").value;
+    let input = document.getElementById("inputText").value;
+    let output = "";
+
+    switch(algo) {
+        case "caesar": output = caesar(input, key, mode); break;
+        case "multiplicative": output = multiplicative(input, key, mode); break;
+        case "playfair": output = playfair(input, key, mode); break;
+        case "hill":
+            let matrix = key.split(',').map(Number); // e.g., "3,3,2,5"
+            output = hillCipher(input, matrix, mode); break;
+        case "railfence": output = railFence(input, key, mode); break;
+        case "vigenere": output = vigenere(input, key, mode); break;
+    }
+    document.getElementById("outputText").value = output;
+}
+
+function showKeyInput() {
+    let algo = document.getElementById("algorithm").value;
+    let keyBox = document.getElementById("key");
+    keyBox.placeholder = (algo==="hill") ? "Enter matrix values comma separated" :
+                         (algo==="playfair") ? "Enter keyword" :
+                         (algo==="vigenere") ? "Enter keyword" : "Enter key/shift";
+}
+</script>
+
+</body>
+</html>
