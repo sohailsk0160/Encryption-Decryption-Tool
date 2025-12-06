@@ -1,91 +1,82 @@
 🔐 Encryption & Decryption Web Tool
 
-This is a simple and interactive web-based cryptography tool built using HTML, CSS, and JavaScript.
-It allows users to encrypt and decrypt text using multiple classical cipher algorithms.
+A simple and interactive web-based cryptography tool built using HTML, CSS, and JavaScript.
+It allows users to encrypt and decrypt text using various classical cipher algorithms—all running directly in the browser.
 
 🚀 Features
 
-✔ User-friendly interface
-✔ Supports multiple encryption/decryption algorithms
-✔ Real-time processing
-✔ No backend required — fully client-side
-✔ Clean and responsive UI
+✔️ User-friendly interface
+
+✔️ Real-time encryption & decryption
+
+✔️ Supports 6 classical cipher algorithms
+
+✔️ Fully client-side (no backend required)
+
+✔️ Clean and responsive design
 
 🔑 Supported Algorithms
 1. Caesar Cipher
 
-Simple shift-based substitution
-
-Works on both uppercase and lowercase letters
+Shift-based substitution cipher supporting uppercase & lowercase text.
 
 2. Multiplicative Cipher
 
-Encrypts text using multiplication modulo 26
-
-Includes automatic modular inverse calculation for decryption
+Encrypts using multiplication modulo 26 with automatic modular inverse calculation.
 
 3. Playfair Cipher
 
-Creates a 5×5 key matrix
-
-Handles repeated letters & padding
-
-Implements row, column, and rectangle rules
+Generates a 5×5 matrix and applies row, column, and rectangle rules.
 
 4. Hill Cipher
 
-Uses matrix multiplication for encryption
-
-Supports 2×2 key matrix
-
-Automatically computes inverse matrix for decryption
+Matrix-based cipher (2×2 matrix) with automatic inverse computation for decryption.
 
 5. Rail Fence Cipher
 
-Uses zig-zag pattern to rearrange characters
-
-Supports both encryption and decryption
+Encrypts by writing text in a zig-zag pattern and reading row-wise.
 
 6. Vigenère Cipher
 
-Keyword-based polyalphabetic cipher
-
-Works on uppercase & lowercase letters
+Keyword-based polyalphabetic cipher supporting uppercase & lowercase characters.
 
 📁 Project Structure
 /project-folder
 │── index.html
 │── README.md
-└── (No external dependencies required)
 
 🛠️ Technologies Used
 
 HTML5 – Structure
 
-CSS3 – Styling & UI
+CSS3 – Styling
 
-JavaScript (ES6) – All encryption/decryption logic
+JavaScript (ES6) – Algorithm logic
 
-📝 How It Works
+📝 How to Use
 
-Select your algorithm
+Open the webpage in any browser
 
-Choose mode → Encrypt or Decrypt
+Select an encryption algorithm
 
-Enter the required key or shift
+Choose Encrypt or Decrypt
+
+Enter the key/shift (if required)
 
 Type your input text
 
-Click Run to get the output
+Click Run
 
-Everything runs inside the browser — no data is stored or uploaded.
+View the output instantly
+
+All processing happens inside your browser — your data never leaves your system.
 
 🎯 Use Cases
 
-Students learning classical cryptography
+Cryptography learning & experiments
 
-Testing encryption algorithms
+College/academic projects
 
-Educational demonstrations
+Demonstrations of classical encryption
 
-Personal experiments with ciphers
+Testing different cipher techniques
