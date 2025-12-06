@@ -14,6 +14,7 @@ It allows users to encrypt and decrypt text using various classical cipher algor
 ✔️ Fully client-side (no backend required)
 
 ✔️ Clean and responsive design
+<hr>
 
 🔑 Supported Algorithms
 1. Caesar Cipher
@@ -39,11 +40,13 @@ Encrypts by writing text in a zig-zag pattern and reading row-wise.
 6. Vigenère Cipher
 
 Keyword-based polyalphabetic cipher supporting uppercase & lowercase characters.
+<hr>
 
 📁 Project Structure
 /project-folder
 │── index.html
 │── README.md
+<hr>
 
 🛠️ Technologies Used
 
@@ -54,6 +57,7 @@ CSS3 – Styling
 JavaScript (ES6) – Algorithm logic
 
 📝 How to Use
+<hr>
 
 Open the webpage in any browser
 
@@ -71,7 +75,6 @@ View the output instantly
 
 All processing happens inside your browser — your data never leaves your system.
 
-🎯 Use Cases
 
 Cryptography learning & experiments
 
