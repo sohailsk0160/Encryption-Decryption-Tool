@@ -2,6 +2,7 @@
 
 A simple and interactive web-based cryptography tool built using HTML, CSS, and JavaScript.
 It allows users to encrypt and decrypt text using various classical cipher algorithms—all running directly in the browser.
+<hr>
 
 🚀 Features
 
@@ -55,31 +56,3 @@ HTML5 – Structure
 CSS3 – Styling
 
 JavaScript (ES6) – Algorithm logic
-
-📝 How to Use
-<hr>
-
-Open the webpage in any browser
-
-Select an encryption algorithm
-
-Choose Encrypt or Decrypt
-
-Enter the key/shift (if required)
-
-Type your input text
-
-Click Run
-
-View the output instantly
-
-All processing happens inside your browser — your data never leaves your system.
-
-
-Cryptography learning & experiments
-
-College/academic projects
-
-Demonstrations of classical encryption
-
-Testing different cipher techniques
